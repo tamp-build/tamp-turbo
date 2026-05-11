@@ -41,7 +41,6 @@ class Build : TampBuild
     });
 
     Target Clean => _ => _
-        .TopLevel()
         .Executes(() =>
         {
             // Exclude the build script's own bin/obj — we're currently running from there.
@@ -59,7 +58,6 @@ class Build : TampBuild
     Target Restore => _ => _.Executes(() => DotNet.Restore(s => s.SetProject(Solution.Path)));
 
     Target Compile => _ => _
-        .TopLevel()
         .DependsOn(nameof(Restore))
         .Executes(() => DotNet.Build(s => s
             .SetProject(Solution.Path)
@@ -67,7 +65,6 @@ class Build : TampBuild
             .SetNoRestore(true)));
 
     Target Test => _ => _
-        .TopLevel()
         .DependsOn(nameof(Compile))
         .Description("Unit tests only — integration tests need Turborepo 2 on PATH.")
         .Executes(() => DotNet.Test(s => s
@@ -80,7 +77,6 @@ class Build : TampBuild
             .SetResultsDirectory(Artifacts / "test-results")));
 
     Target Pack => _ => _
-        .TopLevel()
         .DependsOn(nameof(Test))
         .Executes(() => DotNet.Pack(s =>
         {
@@ -92,7 +88,6 @@ class Build : TampBuild
         }));
 
     Target Push => _ => _
-        .TopLevel()
         .DependsOn(nameof(Pack))
         .Requires(() => NuGetApiKey != null)
         .Executes(() => Artifacts.GlobFiles("*.nupkg")
@@ -103,7 +98,6 @@ class Build : TampBuild
                 .SetSkipDuplicate(true))));
 
     Target Ci => _ => _
-        .TopLevel()
         .DependsOn(nameof(Info), nameof(Clean), nameof(Pack));
 
     Target Default => _ => _.DependsOn(nameof(Compile));
@@ -128,6 +122,5 @@ class Build : TampBuild
         .Executes(() => Tamp.SonarScanner.V10.SonarScanner.End(SonarTool, s => s.SetToken(SonarToken)));
 
     Target Sonar => _ => _
-        .TopLevel()
         .DependsOn(nameof(SonarBegin), nameof(SonarEnd));
 }

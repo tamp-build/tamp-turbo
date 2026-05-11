@@ -64,4 +64,78 @@ public static class Turbo
         configure?.Invoke(s);
         return s.ToCommandPlan(tool);
     }
+
+    // ---- Object-init overloads (TAM-161) ----
+    // Two equivalent authoring styles; both produce identical CommandPlans. Fluent
+    // stays canonical in docs and `tamp init` templates; object-init available for
+    // consumers who prefer the C# initializer shape.
+    //
+    //     Turbo.Run(tool, new() { Tasks = { "build" }, Filters = { "@app/web" } });
+    //
+    // is equivalent to:
+    //
+    //     Turbo.Run(tool, s => s.AddTask("build").AddFilter("@app/web"));
+
+    public static CommandPlan Run(Tool tool, TurboRunSettings settings)
+    {
+        if (tool is null) throw new ArgumentNullException(nameof(tool));
+        if (settings is null) throw new ArgumentNullException(nameof(settings));
+        return settings.ToCommandPlan(tool);
+    }
+
+    public static CommandPlan Prune(Tool tool, TurboPruneSettings settings)
+    {
+        if (tool is null) throw new ArgumentNullException(nameof(tool));
+        if (settings is null) throw new ArgumentNullException(nameof(settings));
+        return settings.ToCommandPlan(tool);
+    }
+
+    public static CommandPlan Ls(Tool tool, TurboLsSettings settings)
+    {
+        if (tool is null) throw new ArgumentNullException(nameof(tool));
+        if (settings is null) throw new ArgumentNullException(nameof(settings));
+        return settings.ToCommandPlan(tool);
+    }
+
+    public static CommandPlan Info(Tool tool, TurboInfoSettings settings)
+    {
+        if (tool is null) throw new ArgumentNullException(nameof(tool));
+        if (settings is null) throw new ArgumentNullException(nameof(settings));
+        return settings.ToCommandPlan(tool);
+    }
+
+    public static CommandPlan Daemon(Tool tool, TurboDaemonSettings settings)
+    {
+        if (tool is null) throw new ArgumentNullException(nameof(tool));
+        if (settings is null) throw new ArgumentNullException(nameof(settings));
+        return settings.ToCommandPlan(tool);
+    }
+
+    public static CommandPlan Login(Tool tool, TurboLoginSettings settings)
+    {
+        if (tool is null) throw new ArgumentNullException(nameof(tool));
+        if (settings is null) throw new ArgumentNullException(nameof(settings));
+        return settings.ToCommandPlan(tool);
+    }
+
+    public static CommandPlan Logout(Tool tool, TurboLogoutSettings settings)
+    {
+        if (tool is null) throw new ArgumentNullException(nameof(tool));
+        if (settings is null) throw new ArgumentNullException(nameof(settings));
+        return settings.ToCommandPlan(tool);
+    }
+
+    public static CommandPlan Link(Tool tool, TurboLinkSettings settings)
+    {
+        if (tool is null) throw new ArgumentNullException(nameof(tool));
+        if (settings is null) throw new ArgumentNullException(nameof(settings));
+        return settings.ToCommandPlan(tool);
+    }
+
+    public static CommandPlan Unlink(Tool tool, TurboUnlinkSettings settings)
+    {
+        if (tool is null) throw new ArgumentNullException(nameof(tool));
+        if (settings is null) throw new ArgumentNullException(nameof(settings));
+        return settings.ToCommandPlan(tool);
+    }
 }
