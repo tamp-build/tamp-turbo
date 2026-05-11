@@ -67,36 +67,52 @@ public sealed class TurboIntegrationTests : IDisposable
         // turbo prune --docker requires a real lockfile (HOL-49 nuance).
         // Run npm install --package-lock-only to generate one without
         // actually fetching anything to node_modules.
-        var npmInstall = new System.Diagnostics.ProcessStartInfo("npm")
+        var npmExe = ResolveOnPath("npm");
+        if (npmExe is not null)
         {
-            WorkingDirectory = _workdir.Value,
-            UseShellExecute = false,
-            RedirectStandardOutput = true,
-            RedirectStandardError = true,
-        };
-        npmInstall.ArgumentList.Add("install");
-        npmInstall.ArgumentList.Add("--package-lock-only");
-        npmInstall.ArgumentList.Add("--silent");
-        using var p = System.Diagnostics.Process.Start(npmInstall);
-        p?.WaitForExit();
+            var psi = new System.Diagnostics.ProcessStartInfo(npmExe)
+            {
+                WorkingDirectory = _workdir.Value,
+                UseShellExecute = false,
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+            };
+            psi.ArgumentList.Add("install");
+            psi.ArgumentList.Add("--package-lock-only");
+            psi.ArgumentList.Add("--silent");
+            using var p = System.Diagnostics.Process.Start(psi);
+            p?.WaitForExit();
+        }
     }
 
-    private static Tool ResolveTool()
+    /// <summary>
+    /// Walks PATH looking for an executable. Handles Windows extensions
+    /// (cmd/exe/bat/ps1). Returns null if nothing found — the caller
+    /// decides whether that's fatal.
+    /// </summary>
+    private static string? ResolveOnPath(string baseName)
     {
         var pathEnv = Environment.GetEnvironmentVariable("PATH") ?? "";
         var names = OperatingSystem.IsWindows()
-            ? new[] { "turbo.cmd", "turbo.exe", "turbo.bat", "turbo.ps1", "turbo" }
-            : new[] { "turbo" };
+            ? new[] { $"{baseName}.cmd", $"{baseName}.exe", $"{baseName}.bat", $"{baseName}.ps1", baseName }
+            : new[] { baseName };
         foreach (var dir in pathEnv.Split(Path.PathSeparator))
         {
             if (string.IsNullOrEmpty(dir)) continue;
             foreach (var n in names)
             {
                 var c = Path.Combine(dir, n);
-                if (File.Exists(c)) return new Tool(AbsolutePath.Create(c));
+                if (File.Exists(c)) return c;
             }
         }
-        throw new InvalidOperationException("turbo not found on PATH. Install: npm i -g turbo");
+        return null;
+    }
+
+    private static Tool ResolveTool()
+    {
+        var p = ResolveOnPath("turbo")
+            ?? throw new InvalidOperationException("turbo not found on PATH. Install: npm i -g turbo");
+        return new Tool(AbsolutePath.Create(p));
     }
 
     private CaptureResult Run(CommandPlan plan)
