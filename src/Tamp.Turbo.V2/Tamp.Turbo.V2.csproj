@@ -10,7 +10,12 @@
     <PackageId>Tamp.Turbo.V2</PackageId>
     <Description>Tamp wrapper for Turborepo 2.x — run, prune (--docker for Dockerfile generation), ls, info, daemon, login/logout/link, plus a Raw escape hatch. Remote-cache token typed as Secret.</Description>
     <IsPackable>true</IsPackable>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\..\README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="$(TampCorePath)" Condition="'$(TampCoreMode)' == 'project'" />
