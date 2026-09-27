@@ -2,6 +2,13 @@
 
 All notable changes to Tamp.Turbo.V2 are documented here.
 
+## [Unreleased]
+
+### Added
+
+- Package now ships XML documentation files (`.xml`) alongside the assembly, so consumers get IntelliSense and API docs. (Mirrors [tamp-build/tamp#3](https://github.com/tamp-build/tamp/pull/50).)
+
+
 ## [0.2.1] - 2026-05-11
 
 ### Added
